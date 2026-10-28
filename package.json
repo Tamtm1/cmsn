@@ -1,0 +1,16 @@
+{
+  "name": "cmsn",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -e \"const express=require('express');const app=express();app.use(express.static('.'));app.listen(process.env.PORT||4173,()=>console.log('Birthday site running at http://localhost:'+(process.env.PORT||4173)))\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

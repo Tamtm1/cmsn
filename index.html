@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chúc Mừng Sinh Nhật Công Chúa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Caveat:wght@600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Quicksand', sans-serif;
+      background: #f7dcdb;
+      color: #5a3d31;
+    }
+    
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease-in-out;
+      z-index: 1;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 10;
+    }
+    #screen7 {
+      overflow: hidden;
+    }
+
+    .pin-message {
+      min-height: 20px;
+      margin: -8px 0 8px;
+      color: #c94a4a;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    /* Màn 1: PIN Keyboard */
+    .pin-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      max-width: 650px;
+      width: 90%;
+      align-items: center;
+    }
+    .pin-avatar {
+      width: 200px;
+      height: 260px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .pin-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .pin-title {
+      font-size: 15px;
+      color: #e67373;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .pin-display {
+      width: 100%;
+      height: 40px;
+      background: #fdf2f2;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pin-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e2b7b7;
+      transition: all 0.2s;
+    }
+    .pin-dot.filled {
+      background: #e65c5c;
+      transform: scale(1.15);
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 220px;
+    }
+    .key-btn {
+      aspect-ratio: 1.7;
+      border: none;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #d85252;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .key-btn:active {
+      transform: scale(0.92);
+      background: #fcebeb;
+    }
+
+    /* Background hearts */
+    .heart-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .floating-heart {
+      position: absolute;
+      color: rgba(240, 128, 128, 0.4);
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(105vh) scale(0.6) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.8; }
+      100% { transform: translateY(-10vh) scale(1.2) rotate(360deg); opacity: 0; }
+    }
+
+    /* Màn 2 & 3: Text Script */
+    .script-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: 38px;
+      color: #c94a4a;
+      text-align: center;
+      padding: 0 20px;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 1s ease;
+    }
+    .script-text.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Màn 4 & 5: Cake Animation chuẩn video */
+    .cake-container {
+      position: relative;
+      width: 240px;
+      height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .cake-layer {
+      width: 200px;
+      height: 44px;
+      background: #f48fb1;
+      border-radius: 10px;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.06);
+      transform: translateY(-350px);
+      opacity: 0;
+      transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .cake-layer.l2 {
+      width: 150px;
+      height: 38px;
+      background: #f06292;
+      margin-bottom: -3px;
+    }
+    .cake-layer.l3 {
+      width: 100px;
+      height: 32px;
+      background: #ec407a;
+      margin-bottom: -3px;
+    }
+    .cake-cream {
+      position: absolute;
+      top: 85px;
+      width: 110px;
+      height: 18px;
+      background: #fff;
+      border-radius: 8px 8px 12px 12px;
+      opacity: 0;
+      transform: translateY(-180px);
+      transition: all 0.5s ease;
+    }
+    .candle {
+      position: absolute;
+      top: 55px;
+      width: 10px;
+      height: 32px;
+      background: repeating-linear-gradient(45deg, #fff, #fff 4px, #ff8a80 4px, #ff8a80 8px);
+      border-radius: 3px;
+      opacity: 0;
+      transform: translateY(-120px);
+      transition: all 0.4s ease;
+    }
+    .flame {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 14px;
+      background: #ffb74d;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 8px #ff9800, 0 0 16px #ff5722;
+      animation: flicker 0.2s infinite alternate;
+      opacity: 0;
+    }
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(0.9); }
+      100% { transform: translateX(-50%) scale(1.1); }
+    }
+
+    .cake-container.step1 .l1 { transform: translateY(0); opacity: 1; }
+    .cake-container.step2 .l2 { transform: translateY(0); opacity: 1; }
+    .cake-container.step3 .l3 { transform: translateY(0); opacity: 1; }
+    .cake-container.step4 .cake-cream { transform: translateY(0); opacity: 1; }
+    .cake-container.step5 .candle { transform: translateY(0); opacity: 1; }
+    .cake-container.step5 .flame { opacity: 1; }
+
+    /* Màn 6: Letter Card chuẩn video */
+    .letter-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      display: flex;
+      gap: 20px;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: all 0.8s ease;
+    }
+    .screen.active .letter-card {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .letter-img {
+      width: 170px;
+      height: 220px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .letter-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .letter-title {
+      font-family: 'Caveat', cursive;
+      font-size: 26px;
+      color: #e53935;
+      margin-bottom: 8px;
+    }
+    .letter-body {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #555;
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+    .next-btn {
+      margin-top: 14px;
+      align-self: flex-end;
+      background: #ff6b81;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255,107,129,0.3);
+      transition: all 0.2s;
+    }
+    .next-btn:hover {
+      background: #ff4757;
+      transform: translateY(-2px);
+    }
+
+    /* Màn 7: 3D Canvas Scene */
+    #canvas3d {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+    .gallery-finale-link {
+      position: absolute;
+      z-index: 2;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 999px;
+      padding: 12px 22px;
+      background: rgba(255,255,255,0.88);
+      color: #b44255;
+      font: inherit;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(120,50,60,0.16);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .gallery-finale-link:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 12px 28px rgba(120,50,60,0.22);
+    }
+    .final-wish {
+      position: relative;
+      width: min(680px, calc(100% - 36px));
+      padding: clamp(28px, 6vw, 56px);
+      border: 1px solid rgba(255,255,255,0.85);
+      border-radius: 28px;
+      background: rgba(255,255,255,0.82);
+      box-shadow: 0 24px 70px rgba(120,50,60,0.16);
+      text-align: center;
+      backdrop-filter: blur(12px);
+      animation: wishAppear 1s ease both;
+    }
+    .final-wish::before,
+    .final-wish::after {
+      content: "♡";
+      position: absolute;
+      color: rgba(220,95,120,0.5);
+      font-size: 42px;
+      animation: wishFloat 3s ease-in-out infinite;
+    }
+    .final-wish::before {
+      top: -20px;
+      left: 9%;
+    }
+    .final-wish::after {
+      right: 9%;
+      bottom: -24px;
+      animation-delay: 1.2s;
+    }
+    .final-wish h2 {
+      margin-bottom: 20px;
+      color: #c94a62;
+      font: 700 clamp(38px, 8vw, 64px)/1.15 'Dancing Script', cursive;
+    }
+    .final-wish p {
+      color: #77515a;
+      font-size: clamp(15px, 2.5vw, 18px);
+      line-height: 1.9;
+    }
+    .final-wish .signature {
+      display: block;
+      margin-top: 24px;
+      color: #cf6175;
+      font: 600 30px 'Dancing Script', cursive;
+    }
+    .final-wish button {
+      margin-top: 28px;
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 22px;
+      background: #e8798b;
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .final-wish button:hover {
+      background: #d95f75;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 600px) and (max-height: 700px) {
+      .final-wish {
+        padding: 24px 22px;
+      }
+      .final-wish h2 {
+        margin-bottom: 12px;
+        font-size: 38px;
+      }
+      .final-wish p {
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      .final-wish .signature {
+        margin-top: 12px;
+        font-size: 27px;
+      }
+      .final-wish button {
+        margin-top: 16px;
+        padding: 10px 18px;
+      }
+    }
+    @media (max-width: 600px) {
+      #screen1,
+      #screen6,
+      #screen8 {
+        padding: 16px;
+      }
+      #screen1 .pin-card {
+        flex-direction: column;
+        width: min(100%, 420px);
+        max-width: 100%;
+        gap: 14px;
+        padding: 16px;
+        margin: auto;
+      }
+      #screen1 .pin-avatar {
+        width: min(100%, 280px);
+        height: clamp(120px, 24vh, 180px);
+      }
+      #screen1 .pin-right {
+        width: 100%;
+      }
+      #screen1 .keypad {
+        width: min(100%, 240px);
+      }
+      #screen1 .key-btn {
+        min-height: 36px;
+      }
+      #screen6 {
+        align-items: flex-start;
+      }
+      #screen6 .letter-card {
+        flex-direction: column;
+        width: min(100%, 440px);
+        max-width: 100%;
+        gap: 14px;
+        padding: 18px;
+        margin: auto;
+      }
+      #screen6 .letter-img {
+        width: 100%;
+        height: clamp(130px, 24vh, 190px);
+      }
+      #screen6 .letter-content {
+        width: 100%;
+      }
+      #screen6 .letter-body {
+        max-height: 25vh;
+      }
+      #screen8 {
+        align-items: flex-start;
+      }
+      #screen8 .final-wish {
+        width: 100%;
+        margin: auto 0;
+      }
+    }
+    @keyframes wishAppear {
+      from { opacity: 0; transform: translateY(18px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes wishFloat {
+      0%, 100% { transform: translateY(0) rotate(-8deg); }
+      50% { transform: translateY(-10px) rotate(8deg); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hiệu ứng trái tim rơi nền -->
+  <div class="heart-bg" id="heartBg"></div>
+
+  <!-- Screen 1: Nhập PIN -->
+  <div class="screen active" id="screen1">
+    <div class="pin-card">
+      <img src="img/%E1%BA%A3nh%201.jpg" class="pin-avatar" alt="Ảnh 1">
+      <div class="pin-right">
+        <div class="pin-title">Hãy nhập ngày sinh của công chúa</div>
+        <div class="pin-display">
+          <div class="pin-dot" id="dot0"></div>
+          <div class="pin-dot" id="dot1"></div>
+          <div class="pin-dot" id="dot2"></div>
+          <div class="pin-dot" id="dot3"></div>
+        </div>
+        <p class="pin-message" id="pinMessage" role="status" aria-live="polite"></p>
+        <div class="keypad">
+          <button class="key-btn" onclick="pressKey('1')">1</button>
+          <button class="key-btn" onclick="pressKey('2')">2</button>
+          <button class="key-btn" onclick="pressKey('3')">3</button>
+          <button class="key-btn" onclick="pressKey('4')">4</button>
+          <button class="key-btn" onclick="pressKey('5')">5</button>
+          <button class="key-btn" onclick="pressKey('6')">6</button>
+          <button class="key-btn" onclick="pressKey('7')">7</button>
+          <button class="key-btn" onclick="pressKey('8')">8</button>
+          <button class="key-btn" onclick="pressKey('9')">9</button>
+          <button class="key-btn" onclick="clearPin()">C</button>
+          <button class="key-btn" onclick="pressKey('0')">0</button>
+          <button class="key-btn" aria-label="Xóa số cuối" onclick="backspacePin()">⌫</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Text 1 -->
+  <div class="screen" id="screen2">
+    <div class="script-text" id="text1">Hôm nay là sinh nhật của em</div>
+  </div>
+
+  <!-- Screen 3: Text 2 -->
+  <div class="screen" id="screen3">
+    <div class="script-text" id="text2">Anh có một món quà nhỏ dành cho em</div>
+  </div>
+
+  <!-- Screen 4 & 5: Dựng bánh sinh nhật -->
+  <div class="screen" id="screen4">
+    <div class="cake-container" id="cake">
+      <div class="candle">
+        <div class="flame"></div>
+      </div>
+      <div class="cake-cream"></div>
+      <div class="cake-layer l3"></div>
+      <div class="cake-layer l2"></div>
+      <div class="cake-layer l1"></div>
+    </div>
+  </div>
+
+  <!-- Screen 6: Bức thư lãng mạn -->
+  <div class="screen" id="screen6">
+    <div class="letter-card">
+      <img src="img/%E1%BA%A3nh%202.jpg" class="letter-img" alt="Ảnh 2">
+      <div class="letter-content">
+        <div class="letter-title">Gửi Em yêu,</div>
+        <div class="letter-body">
+          Chúc mừng sinh nhật em yêu!<br><br>
+          Hôm nay là ngày đặc biệt của em, anh chỉ mong em luôn vui vẻ, hạnh phúc và gặt hái được thật nhiều may mắn trong cuộc sống.<br><br>
+          Cảm ơn em vì đã đến bên anh, mang lại sự ấm áp và những khoảnh khắc tuyệt vời nhất. Yêu em rất nhiều!
+        </div>
+        <button class="next-btn" onclick="goTo3DScene()">Xem tiếp ❤️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 7: Không gian 3D 4 chiều -->
+  <div class="screen" id="screen7">
+    <canvas id="canvas3d"></canvas>
+    <button class="gallery-finale-link" onclick="goToFinalWish()">Đọc lời chúc cuối ❤️</button>
+  </div>
+
+  <!-- Screen 8: Lời chúc cuối -->
+  <div class="screen" id="screen8">
+    <article class="final-wish">
+      <h2>Gửi em, điều dịu dàng nhất</h2>
+      <p>
+        Chúc cô gái của anh tuổi mới luôn bình yên trong lòng, rạng rỡ trên môi
+        và gặp thật nhiều điều tốt đẹp trên mỗi chặng đường.<br><br>
+        Mong mọi ước mơ em ấp ủ đều dần thành hiện thực. Dù ngày nắng hay ngày mưa,
+        anh vẫn mong được ở cạnh em, cùng em gom góp những niềm vui nhỏ bé thành
+        một tình yêu thật lâu dài.<br><br>
+        Cảm ơn em vì đã làm thế giới của anh trở nên ấm áp hơn.
+        Sinh nhật thật hạnh phúc nhé, công chúa của anh. Anh thương em rất nhiều!
+      </p>
+      <span class="signature">Mãi thương em ❤️</span>
+      <button onclick="returnToGallery()">Quay lại ngắm kỷ niệm</button>
+    </article>
+  </div>
+
+  <script>
+    // Tạo hiệu ứng trái tim rơi nền
+    const heartBg = document.getElementById('heartBg');
+    for (let i = 0; i < 25; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.innerHTML = '❤️';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+      heart.style.animationDelay = Math.random() * 5 + 's';
+      heart.style.fontSize = (Math.random() * 14 + 12) + 'px';
+      heartBg.appendChild(heart);
+    }
+
+    // Xử lý nhập PIN (Mã đúng: 2810)
+    let currentPin = '';
+    const correctPin = '2810';
+    let isCheckingPin = false;
+
+    function pressKey(num) {
+      if (!/^\d$/.test(num) || isCheckingPin || currentPin.length >= 4) return;
+
+      currentPin += num;
+      updateDots();
+      if (currentPin.length === 4) {
+        isCheckingPin = true;
+        setTimeout(checkPin, 250);
+      }
+    }
+
+    function clearPin() {
+      if (isCheckingPin) return;
+      currentPin = '';
+      updateDots();
+      document.getElementById('pinMessage').textContent = '';
+    }
+
+    function backspacePin() {
+      if (isCheckingPin) return;
+      currentPin = currentPin.slice(0, -1);
+      updateDots();
+      document.getElementById('pinMessage').textContent = '';
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (!document.getElementById('screen1').classList.contains('active')) return;
+      if (/^\d$/.test(event.key)) {
+        pressKey(event.key);
+      } else if (event.key === 'Backspace') {
+        backspacePin();
+      } else if (event.key === 'Escape') {
+        clearPin();
+      }
+    });
+
+    function updateDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`dot${i}`);
+        if (i < currentPin.length) {
+          dot.classList.add('filled');
+        } else {
+          dot.classList.remove('filled');
+        }
+      }
+    }
+
+    function checkPin() {
+      if (currentPin === correctPin) {
+        document.getElementById('pinMessage').textContent = '';
+        switchScreen('screen1', 'screen2');
+        runTimeline();
+      } else {
+        document.getElementById('pinMessage').textContent = 'Mã chưa đúng, thử lại nhé!';
+        currentPin = '';
+        updateDots();
+        isCheckingPin = false;
+      }
+    }
+
+    function switchScreen(fromId, toId) {
+      document.getElementById(fromId).classList.remove('active');
+      document.getElementById(toId).classList.add('active');
+    }
+
+    // Dòng thời gian hiển thị chuẩn video mẫu
+    function runTimeline() {
+      setTimeout(() => {
+        document.getElementById('text1').classList.add('show');
+      }, 300);
+
+      setTimeout(() => {
+        document.getElementById('text1').classList.remove('show');
+        setTimeout(() => {
+          switchScreen('screen2', 'screen3');
+          document.getElementById('text2').classList.add('show');
+        }, 600);
+      }, 3000);
+
+      setTimeout(() => {
+        document.getElementById('text2').classList.remove('show');
+        setTimeout(() => {
+          switchScreen('screen3', 'screen4');
+          animateCake();
+        }, 600);
+      }, 6000);
+    }
+
+    // Hiệu ứng rơi tầng bánh & nến
+    function animateCake() {
+      const cake = document.getElementById('cake');
+      setTimeout(() => cake.classList.add('step1'), 300);
+      setTimeout(() => cake.classList.add('step2'), 900);
+      setTimeout(() => cake.classList.add('step3'), 1500);
+      setTimeout(() => cake.classList.add('step4'), 2200);
+      setTimeout(() => cake.classList.add('step5'), 2900);
+
+      setTimeout(() => {
+        switchScreen('screen4', 'screen6');
+      }, 5500);
+    }
+
+    function goTo3DScene() {
+      switchScreen('screen6', 'screen7');
+      init3DScene();
+    }
+
+    let galleryStarted = false;
+
+    function goToFinalWish() {
+      switchScreen('screen7', 'screen8');
+    }
+
+    function returnToGallery() {
+      switchScreen('screen8', 'screen7');
+    }
+
+    // Helper tạo texture dòng chữ chúc mừng 3D bằng HTML Canvas 2D
+    function createTextTexture(text) {
+      const textCanvas = document.createElement('canvas');
+      textCanvas.width = 1024;
+      textCanvas.height = 256;
+      const ctx = textCanvas.getContext('2d');
+      ctx.clearRect(0, 0, textCanvas.width, textCanvas.height);
+      ctx.font = 'bold 70px "Dancing Script", cursive, sans-serif';
+      ctx.fillStyle = '#ff3366';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, textCanvas.width / 2, textCanvas.height / 2);
+
+      const texture = new THREE.CanvasTexture(textCanvas);
+      texture.needsUpdate = true;
+      return texture;
+    }
+
+    // Khởi tạo Không gian 3D (Three.js) với cả Ảnh + Chữ hồng bay bồng bềnh
+    function init3DScene() {
+      if (galleryStarted) return;
+      if (typeof THREE === 'undefined') {
+        alert('Không tải được thư viện ảnh 3D. Vui lòng kiểm tra kết nối mạng.');
+        return;
+      }
+      galleryStarted = true;
+
+      const canvas = document.getElementById('canvas3d');
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0xf7dcdb, 0.015);
+
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 35;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const group = new THREE.Group();
+      scene.add(group);
+
+      const sampleImages = [
+        'img/%E1%BA%A3nh%201.jpg',
+        'img/%E1%BA%A3nh%202.jpg',
+        'img/%E1%BA%A3nh%203.jpg',
+        'img/%E1%BA%A3nh%204.jpg',
+        'img/%E1%BA%A3nh%205.jpg',
+        'img/%E1%BA%A3nh%206.jpg',
+        'img/%E1%BA%A3nh%207.jpg',
+        'img/%E1%BA%A3nh%208.jpg',
+        'img/%E1%BA%A3nh%209.jpg',
+        'img/%E1%BA%A3nh%2010.jpg',
+        'img/%E1%BA%A3nh%2011.jpg',
+        'img/%E1%BA%A3nh%2012.jpg'
+      ];
+
+      const wishes = [
+        "Chúc mừng sinh nhật công chúa của anh",
+        "Hôm nay là ngày của em...",
+        "Xinh đẹp xuất sắc thanh xuân em nhé",
+        "Yêu em nhiều hơn mỗi ngày...",
+        "Sinh nhật vui vẻ em nhé ❤️",
+        "Mong em luôn bình yên và hạnh phúc",
+        "Công chúa nhỏ của anh ❤️"
+      ];
+
+      const textureLoader = new THREE.TextureLoader();
+
+      // 1. Tạo các tấm ảnh 3D
+      for (let i = 0; i < sampleImages.length; i++) {
+        const imgUrl = sampleImages[i % sampleImages.length];
+        textureLoader.load(imgUrl, (texture) => {
+          const geometry = new THREE.PlaneGeometry(5, 6);
+          const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide, transparent: true });
+          const mesh = new THREE.Mesh(geometry, material);
+
+          mesh.position.x = (Math.random() - 0.5) * 45;
+          mesh.position.y = (Math.random() - 0.5) * 35;
+          mesh.position.z = (Math.random() - 0.5) * 35;
+
+          mesh.rotation.x = Math.random() * Math.PI;
+          mesh.rotation.y = Math.random() * Math.PI;
+
+          group.add(mesh);
+        });
+      }
+
+      // 2. Tạo các dòng chữ chúc mừng màu hồng bay lơ lửng 3D
+      for (let i = 0; i < 20; i++) {
+        const wishText = wishes[i % wishes.length];
+        const textTexture = createTextTexture(wishText);
+        const textGeo = new THREE.PlaneGeometry(16, 4);
+        const textMat = new THREE.MeshBasicMaterial({
+          map: textTexture,
+          transparent: true,
+          side: THREE.DoubleSide
+        });
+        const textMesh = new THREE.Mesh(textGeo, textMat);
+
+        textMesh.position.x = (Math.random() - 0.5) * 55;
+        textMesh.position.y = (Math.random() - 0.5) * 40;
+        textMesh.position.z = (Math.random() - 0.5) * 45;
+
+        textMesh.rotation.x = (Math.random() - 0.5) * 0.5;
+        textMesh.rotation.y = (Math.random() - 0.5) * 0.5;
+
+        group.add(textMesh);
+      }
+
+      let isDragging = false;
+      let previousMousePosition = { x: 0, y: 0 };
+
+      window.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const deltaX = e.clientX - previousMousePosition.x;
+        const deltaY = e.clientY - previousMousePosition.y;
+
+        group.rotation.y += deltaX * 0.005;
+        group.rotation.x += deltaY * 0.005;
+
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mouseup', () => isDragging = false);
+
+      window.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+      });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const deltaX = e.touches[0].clientX - previousMousePosition.x;
+        const deltaY = e.touches[0].clientY - previousMousePosition.y;
+
+        group.rotation.y += deltaX * 0.005;
+        group.rotation.x += deltaY * 0.005;
+
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      });
+
+      window.addEventListener('touchend', () => isDragging = false);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!isDragging) {
+          group.rotation.y += 0.002;
+        }
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+  </script>
+</body>
+</html>
