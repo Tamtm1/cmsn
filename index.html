@@ -168,145 +168,208 @@
       transform: translateY(0);
     }
 
-    /* Màn 4 & 5: Cake Animation chuẩn video */
-    .cake-container {
-      position: relative;
-      width: 240px;
-      height: 220px;
+    /* Màn 4 & 5: Bánh sinh nhật vẽ bằng Canvas */
+    #screen4 {
+      background: url("./img/birthday-background.png") center / cover no-repeat, #f2d5ee;
+    }
+    .cake-scene {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-end;
+      gap: 8px;
+      width: 100%;
+      padding: 20px 16px;
     }
-    .cake-layer {
-      width: 200px;
-      height: 44px;
-      background: #f48fb1;
-      border-radius: 10px;
-      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.06);
-      transform: translateY(-350px);
-      opacity: 0;
-      transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    .cake-canvas {
+      display: block;
+      width: min(90vw, 560px, 70vh);
+      height: auto;
+      aspect-ratio: 6 / 5;
+      overflow: visible;
     }
-    .cake-layer.l2 {
-      width: 150px;
-      height: 38px;
-      background: #f06292;
-      margin-bottom: -3px;
+    .blow-candles-button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 24px;
+      background: #ff6b81;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(255,107,129,0.3);
+      cursor: pointer;
+      animation: wishAppear 0.6s ease both;
+      transition: background 0.2s ease, transform 0.2s ease;
     }
-    .cake-layer.l3 {
-      width: 100px;
-      height: 32px;
-      background: #ec407a;
-      margin-bottom: -3px;
+    .blow-candles-button:hover {
+      background: #ff4757;
+      transform: translateY(-2px);
     }
-    .cake-cream {
-      position: absolute;
-      top: 85px;
-      width: 110px;
-      height: 18px;
-      background: #fff;
-      border-radius: 8px 8px 12px 12px;
-      opacity: 0;
-      transform: translateY(-180px);
-      transition: all 0.5s ease;
-    }
-    .candle {
-      position: absolute;
-      top: 55px;
-      width: 10px;
-      height: 32px;
-      background: repeating-linear-gradient(45deg, #fff, #fff 4px, #ff8a80 4px, #ff8a80 8px);
-      border-radius: 3px;
-      opacity: 0;
-      transform: translateY(-120px);
-      transition: all 0.4s ease;
-    }
-    .flame {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 8px;
-      height: 14px;
-      background: #ffb74d;
-      border-radius: 50% 50% 20% 20%;
-      box-shadow: 0 0 8px #ff9800, 0 0 16px #ff5722;
-      animation: flicker 0.2s infinite alternate;
-      opacity: 0;
-    }
-    @keyframes flicker {
-      0% { transform: translateX(-50%) scale(0.9); }
-      100% { transform: translateX(-50%) scale(1.1); }
+    .blow-candles-button:disabled {
+      cursor: wait;
+      opacity: 0.8;
     }
 
-    .cake-container.step1 .l1 { transform: translateY(0); opacity: 1; }
-    .cake-container.step2 .l2 { transform: translateY(0); opacity: 1; }
-    .cake-container.step3 .l3 { transform: translateY(0); opacity: 1; }
-    .cake-container.step4 .cake-cream { transform: translateY(0); opacity: 1; }
-    .cake-container.step5 .candle { transform: translateY(0); opacity: 1; }
-    .cake-container.step5 .flame { opacity: 1; }
-
-    /* Màn 6: Letter Card chuẩn video */
+    /* Màn 6: Bức thư sinh nhật và quả cầu kỷ niệm */
+    #screen6 {
+      padding: clamp(18px, 4vw, 56px);
+      background:
+        radial-gradient(ellipse at 20% 18%, rgba(255,255,255,0.82), transparent 34%),
+        radial-gradient(ellipse at 82% 84%, rgba(242,142,164,0.2), transparent 38%),
+        linear-gradient(145deg, #fff5f3, #f8dfe2 55%, #f5d2d9);
+    }
+    #screen6::before,
+    #screen6::after {
+      content: "✦";
+      position: absolute;
+      color: rgba(195, 91, 119, 0.3);
+      pointer-events: none;
+      animation: wishFloat 5s ease-in-out infinite;
+    }
+    #screen6::before {
+      top: 12%;
+      left: 9%;
+      font-size: 30px;
+    }
+    #screen6::after {
+      right: 10%;
+      bottom: 13%;
+      font-size: 22px;
+      animation-delay: -2.5s;
+    }
     .letter-card {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 600px;
-      width: 90%;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(255,249,247,0.96));
+      border: 1px solid rgba(255,255,255,0.9);
+      border-radius: 30px;
+      padding: clamp(24px, 4vw, 52px);
+      max-width: 940px;
+      width: min(100%, 940px);
+      box-shadow: 0 30px 90px rgba(120,50,70,0.2), 0 5px 18px rgba(120,50,70,0.08);
       display: flex;
-      gap: 20px;
-      transform: scale(0.9);
+      align-items: center;
+      gap: clamp(30px, 5vw, 64px);
+      transform: translateY(24px) scale(0.96);
       opacity: 0;
-      transition: all 0.8s ease;
+      transition: transform 0.8s cubic-bezier(0.2,0.8,0.2,1), opacity 0.8s ease;
+    }
+    .letter-card::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: -1;
+      border: 1px solid rgba(195,91,119,0.16);
+      border-radius: 22px;
+      pointer-events: none;
+    }
+    .letter-card::after {
+      content: "♡";
+      position: absolute;
+      top: 18px;
+      right: 30px;
+      color: rgba(195,91,119,0.22);
+      font: 30px/1 Georgia, serif;
+      pointer-events: none;
     }
     .screen.active .letter-card {
-      transform: scale(1);
+      transform: translateY(0) scale(1);
       opacity: 1;
     }
+    .letter-orb {
+      position: relative;
+      flex: 0 0 clamp(210px, 29vw, 300px);
+      width: clamp(210px, 29vw, 300px);
+      aspect-ratio: 1;
+      padding: 9px;
+      border-radius: 50%;
+      background: conic-gradient(from 25deg, #fff6d8, #e9b978, #fff4dc, #c98091, #fff6d8);
+      box-shadow: 0 22px 48px rgba(118,54,77,0.24), inset 0 0 0 1px rgba(255,255,255,0.9);
+      animation: orbFloat 6s ease-in-out infinite;
+    }
+    .letter-orb::before {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      z-index: 1;
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .letter-orb::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 29% 18%, rgba(255,255,255,0.72), transparent 28%),
+        linear-gradient(135deg, rgba(255,255,255,0.16), transparent 42%, rgba(75,24,43,0.24));
+      pointer-events: none;
+    }
     .letter-img {
-      width: 170px;
-      height: 220px;
-      border-radius: 12px;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 4px solid rgba(255,255,255,0.94);
+      border-radius: 50%;
       object-fit: cover;
-      flex-shrink: 0;
+      object-position: center 35%;
+      box-shadow: inset 0 0 24px rgba(79,35,48,0.25);
     }
     .letter-content {
+      position: relative;
+      z-index: 1;
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
+      padding: 8px 0;
+    }
+    .letter-kicker {
+      margin: 0 0 8px;
+      color: #a36a76;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
     }
     .letter-title {
       font-family: 'Caveat', cursive;
-      font-size: 26px;
-      color: #e53935;
-      margin-bottom: 8px;
+      font-size: clamp(38px, 5vw, 54px);
+      line-height: 1;
+      color: #c94a68;
+      margin-bottom: 18px;
     }
     .letter-body {
-      font-size: 13px;
-      line-height: 1.6;
-      color: #555;
-      max-height: 180px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: #694d54;
+      max-height: min(42vh, 360px);
       overflow-y: auto;
-      padding-right: 6px;
+      padding-right: 12px;
+      scrollbar-color: #d99aaa transparent;
+      scrollbar-width: thin;
     }
     .next-btn {
       margin-top: 14px;
       align-self: flex-end;
-      background: #ff6b81;
+      background: linear-gradient(135deg, #d65d78, #b83e63);
       color: white;
       border: none;
-      padding: 8px 18px;
-      border-radius: 16px;
+      padding: 12px 22px;
+      border-radius: 999px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(255,107,129,0.3);
-      transition: all 0.2s;
+      box-shadow: 0 8px 20px rgba(184,62,99,0.25);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .next-btn:hover {
-      background: #ff4757;
       transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(184,62,99,0.32);
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-9px) rotate(2deg); }
     }
 
     /* Màn 7: 3D Canvas Scene */
@@ -422,6 +485,11 @@
       }
     }
     @media (max-width: 600px) {
+      #screen4 {
+        background-position: center top;
+        background-size: 100% auto;
+        background-color: #f2d5ee;
+      }
       #screen1,
       #screen6,
       #screen8 {
@@ -455,19 +523,25 @@
         flex-direction: column;
         width: min(100%, 440px);
         max-width: 100%;
-        gap: 14px;
-        padding: 18px;
+        gap: 20px;
+        padding: 28px 22px 22px;
         margin: auto;
       }
-      #screen6 .letter-img {
-        width: 100%;
-        height: clamp(130px, 24vh, 190px);
+      #screen6 .letter-orb {
+        flex: 0 0 clamp(160px, 44vw, 210px);
+        width: clamp(160px, 44vw, 210px);
+        height: clamp(160px, 44vw, 210px);
       }
       #screen6 .letter-content {
-        width: 100%;
+        padding: 0;
+      }
+      #screen6 .letter-title {
+        margin-bottom: 12px;
       }
       #screen6 .letter-body {
-        max-height: 25vh;
+        max-height: 27vh;
+        font-size: 14px;
+        line-height: 1.7;
       }
       #screen8 {
         align-items: flex-start;
@@ -542,21 +616,18 @@
 
   <!-- Screen 4 & 5: Dựng bánh sinh nhật -->
   <div class="screen" id="screen4">
-    <div class="cake-container" id="cake">
-      <div class="candle">
-        <div class="flame"></div>
-      </div>
-      <div class="cake-cream"></div>
-      <div class="cake-layer l3"></div>
-      <div class="cake-layer l2"></div>
-      <div class="cake-layer l1"></div>
+    <div class="cake-scene">
+      <canvas class="cake-canvas" id="cakeCanvas" aria-label="Bánh sinh nhật nhiều tầng với dâu tây và ngọn nến đang cháy" role="img"></canvas>
+      <button class="blow-candles-button" id="blowCandles" type="button" hidden>Thổi nến</button>
     </div>
   </div>
 
   <!-- Screen 6: Bức thư lãng mạn -->
   <div class="screen" id="screen6">
     <div class="letter-card">
-      <img src="img/%E1%BA%A3nh%202.jpg" class="letter-img" alt="Ảnh 2">
+      <div class="letter-orb">
+        <img src="img/%E1%BA%A3nh%202.jpg" class="letter-img" alt="Kỷ niệm sinh nhật của em yêu">
+      </div>
       <div class="letter-content">
         <div class="letter-title">Gửi Em yêu,</div>
         <div class="letter-body">
@@ -605,6 +676,11 @@
       heart.style.animationDelay = Math.random() * 5 + 's';
       heart.style.fontSize = (Math.random() * 14 + 12) + 'px';
       heartBg.appendChild(heart);
+    }
+
+    if (window.location.hash === '#screen6') {
+      document.querySelector('.screen.active')?.classList.remove('active');
+      document.getElementById('screen6').classList.add('active');
     }
 
     // Xử lý nhập PIN (Mã đúng: 2810)
@@ -700,19 +776,280 @@
       }, 6000);
     }
 
-    // Hiệu ứng rơi tầng bánh & nến
-    function animateCake() {
-      const cake = document.getElementById('cake');
-      setTimeout(() => cake.classList.add('step1'), 300);
-      setTimeout(() => cake.classList.add('step2'), 900);
-      setTimeout(() => cake.classList.add('step3'), 1500);
-      setTimeout(() => cake.classList.add('step4'), 2200);
-      setTimeout(() => cake.classList.add('step5'), 2900);
+    const cakeCanvas = document.getElementById('cakeCanvas');
+    const cakeContext = cakeCanvas.getContext('2d');
+    const cakeMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let cakeAnimationStart = 0;
+    let cakeAnimationFrame = 0;
+    let candleBlownOut = false;
 
-      setTimeout(() => {
-        switchScreen('screen4', 'screen6');
-      }, 5500);
+    function resizeCakeCanvas() {
+      const bounds = cakeCanvas.getBoundingClientRect();
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      cakeCanvas.width = Math.round(bounds.width * pixelRatio);
+      cakeCanvas.height = Math.round(bounds.height * pixelRatio);
+      cakeContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      renderCake(performance.now());
     }
+
+    function drawCakeTier(centerX, topY, radiusX, radiusY, height, sideColor, topColor) {
+      cakeContext.beginPath();
+      cakeContext.moveTo(centerX - radiusX, topY);
+      cakeContext.lineTo(centerX - radiusX, topY + height);
+      cakeContext.ellipse(centerX, topY + height, radiusX, radiusY, 0, Math.PI, 0, true);
+      cakeContext.lineTo(centerX + radiusX, topY);
+      cakeContext.closePath();
+      cakeContext.fillStyle = sideColor;
+      cakeContext.fill();
+
+      cakeContext.beginPath();
+      cakeContext.ellipse(centerX, topY, radiusX, radiusY, 0, 0, Math.PI * 2);
+      cakeContext.fillStyle = topColor;
+      cakeContext.fill();
+      cakeContext.strokeStyle = 'rgba(255,255,255,0.65)';
+      cakeContext.lineWidth = 2;
+      cakeContext.stroke();
+    }
+
+    function drawCakeBerry(x, y, scale = 1) {
+      cakeContext.save();
+      cakeContext.translate(x, y);
+      cakeContext.scale(scale, scale);
+      cakeContext.fillStyle = '#d93659';
+      cakeContext.beginPath();
+      cakeContext.moveTo(0, -13);
+      cakeContext.bezierCurveTo(13, -17, 15, -3, 0, 10);
+      cakeContext.bezierCurveTo(-15, -3, -13, -17, 0, -13);
+      cakeContext.fill();
+      cakeContext.fillStyle = '#547c55';
+      cakeContext.beginPath();
+      cakeContext.moveTo(-2, -11);
+      cakeContext.lineTo(-8, -18);
+      cakeContext.lineTo(-1, -15);
+      cakeContext.lineTo(3, -20);
+      cakeContext.lineTo(4, -13);
+      cakeContext.lineTo(10, -16);
+      cakeContext.lineTo(5, -10);
+      cakeContext.closePath();
+      cakeContext.fill();
+      cakeContext.fillStyle = '#ffe5a7';
+      [[-5, -7], [4, -5], [0, 1], [6, 2], [-3, 4]].forEach(([seedX, seedY]) => {
+        cakeContext.beginPath();
+        cakeContext.ellipse(seedX, seedY, 1.1, 2, -0.3, 0, Math.PI * 2);
+        cakeContext.fill();
+      });
+      cakeContext.restore();
+    }
+
+    function drawFrostingDrips(centerX, topY, radiusX, radiusY, height) {
+      cakeContext.beginPath();
+      cakeContext.moveTo(centerX - radiusX, topY);
+      cakeContext.lineTo(centerX - radiusX, topY + height * 0.56);
+      [-0.78, -0.52, -0.24, 0.06, 0.34, 0.62, 0.86].forEach((position, index) => {
+        const x = centerX + radiusX * position;
+        const drip = index % 2 === 0 ? 18 : 10;
+        cakeContext.lineTo(x, topY + height * 0.56);
+        cakeContext.quadraticCurveTo(x + 7, topY + height * 0.56, x + 7, topY + height * 0.56 + drip);
+        cakeContext.quadraticCurveTo(x + 8, topY + height * 0.56 + drip + 5, x + 13, topY + height * 0.56 + drip);
+        cakeContext.lineTo(x + 13, topY + height * 0.56);
+      });
+      cakeContext.lineTo(centerX + radiusX, topY + height * 0.56);
+      cakeContext.lineTo(centerX + radiusX, topY);
+      cakeContext.closePath();
+      cakeContext.fillStyle = '#fff7f2';
+      cakeContext.fill();
+      cakeContext.beginPath();
+      cakeContext.ellipse(centerX, topY, radiusX, radiusY, 0, 0, Math.PI * 2);
+      cakeContext.fillStyle = '#fffaf6';
+      cakeContext.fill();
+    }
+
+    function renderCake(timestamp) {
+      const width = cakeCanvas.clientWidth;
+      const height = cakeCanvas.clientHeight;
+      if (!width || !height) return;
+
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const scale = Math.min(width / 600, height / 500);
+      const offsetX = (width - 600 * scale) / 2;
+      const offsetY = (height - 500 * scale) / 2;
+      cakeContext.setTransform(
+        scale * pixelRatio,
+        0,
+        0,
+        scale * pixelRatio,
+        offsetX * pixelRatio,
+        offsetY * pixelRatio
+      );
+      cakeContext.clearRect(0, 0, 600, 500);
+
+      const elapsed = Math.max(0, timestamp - cakeAnimationStart);
+      const reveal = (start, duration = 650) => cakeMotionPreference.matches
+        ? 1
+        : Math.max(0, Math.min(1, (elapsed - start) / duration));
+      const translateFromAbove = progress => -90 * (1 - progress);
+      const centerX = 300;
+      const plateY = 400;
+
+      const glow = cakeContext.createRadialGradient(centerX, 300, 30, centerX, 300, 250);
+      glow.addColorStop(0, 'rgba(255,213,218,0.62)');
+      glow.addColorStop(1, 'rgba(255,213,218,0)');
+      cakeContext.fillStyle = glow;
+      cakeContext.fillRect(20, 35, 560, 430);
+
+      const plateProgress = reveal(0, 700);
+      cakeContext.save();
+      cakeContext.globalAlpha = plateProgress;
+      cakeContext.translate(0, translateFromAbove(plateProgress));
+      cakeContext.fillStyle = 'rgba(132,75,82,0.14)';
+      cakeContext.beginPath();
+      cakeContext.ellipse(centerX, plateY + 25, 205, 38, 0, 0, Math.PI * 2);
+      cakeContext.fill();
+      const plate = cakeContext.createLinearGradient(centerX, plateY - 14, centerX, plateY + 35);
+      plate.addColorStop(0, '#fffefa');
+      plate.addColorStop(0.52, '#e8dadd');
+      plate.addColorStop(1, '#fffefa');
+      cakeContext.fillStyle = plate;
+      cakeContext.beginPath();
+      cakeContext.ellipse(centerX, plateY, 205, 39, 0, 0, Math.PI * 2);
+      cakeContext.fill();
+      cakeContext.strokeStyle = '#d4b5bc';
+      cakeContext.lineWidth = 2;
+      cakeContext.stroke();
+      cakeContext.restore();
+
+      const lowerProgress = reveal(200, 700);
+      cakeContext.save();
+      cakeContext.globalAlpha = lowerProgress;
+      cakeContext.translate(0, translateFromAbove(lowerProgress));
+      cakeContext.shadowColor = 'rgba(160,70,91,0.2)';
+      cakeContext.shadowBlur = 18;
+      cakeContext.shadowOffsetY = 10;
+      drawCakeTier(centerX, 268, 176, 46, 135, '#de6281', '#ffb2c5');
+      cakeContext.shadowColor = 'transparent';
+      cakeContext.fillStyle = 'rgba(255,245,242,0.8)';
+      cakeContext.fillRect(centerX - 174, 315, 348, 5);
+      cakeContext.restore();
+
+      const upperProgress = reveal(850, 700);
+      cakeContext.save();
+      cakeContext.globalAlpha = upperProgress;
+      cakeContext.translate(0, translateFromAbove(upperProgress));
+      cakeContext.shadowColor = 'rgba(160,70,91,0.16)';
+      cakeContext.shadowBlur = 15;
+      cakeContext.shadowOffsetY = 7;
+      drawCakeTier(centerX, 189, 122, 34, 88, '#ed8299', '#ffd0d8');
+      cakeContext.shadowColor = 'transparent';
+      drawFrostingDrips(centerX, 189, 122, 34, 88);
+      cakeContext.restore();
+
+      const decorationsProgress = reveal(1500, 550);
+      cakeContext.save();
+      cakeContext.globalAlpha = decorationsProgress;
+      [
+        [-77, 188, 0.82],
+        [-25, 172, 0.92],
+        [32, 176, 0.88],
+        [80, 190, 0.78],
+        [-133, 278, 0.72],
+        [-77, 263, 0.75],
+        [0, 267, 0.8],
+        [78, 263, 0.75],
+        [133, 278, 0.72],
+      ].forEach(([x, y, size]) => drawCakeBerry(centerX + x, y, size));
+      cakeContext.restore();
+
+      const candleProgress = reveal(2050, 600);
+      cakeContext.save();
+      cakeContext.globalAlpha = candleProgress;
+      cakeContext.translate(0, translateFromAbove(candleProgress));
+      const candleX = centerX;
+      const candleTop = 118;
+      cakeContext.shadowColor = 'rgba(62,115,142,0.2)';
+      cakeContext.shadowBlur = 9;
+      cakeContext.fillStyle = '#50b9d1';
+      cakeContext.beginPath();
+      cakeContext.roundRect(candleX - 9, candleTop, 18, 75, 5);
+      cakeContext.fill();
+      cakeContext.shadowColor = 'transparent';
+      cakeContext.save();
+      cakeContext.beginPath();
+      cakeContext.roundRect(candleX - 9, candleTop, 18, 75, 5);
+      cakeContext.clip();
+      cakeContext.strokeStyle = 'rgba(255,255,255,0.92)';
+      cakeContext.lineWidth = 4;
+      for (let stripeY = candleTop - 8; stripeY < candleTop + 85; stripeY += 15) {
+        cakeContext.beginPath();
+        cakeContext.moveTo(candleX - 12, stripeY + 8);
+        cakeContext.lineTo(candleX + 12, stripeY - 4);
+        cakeContext.stroke();
+      }
+      cakeContext.restore();
+      cakeContext.strokeStyle = '#73565a';
+      cakeContext.lineWidth = 3;
+      cakeContext.beginPath();
+      cakeContext.moveTo(candleX, candleTop);
+      cakeContext.lineTo(candleX, candleTop - 12);
+      cakeContext.stroke();
+
+      if (!candleBlownOut && candleProgress >= 1) {
+        const flicker = Math.sin(timestamp / 110) * 4;
+        cakeContext.shadowColor = '#ff873b';
+        cakeContext.shadowBlur = 28;
+        cakeContext.fillStyle = 'rgba(255,177,70,0.2)';
+        cakeContext.beginPath();
+        cakeContext.arc(candleX, candleTop - 30, 27 + Math.sin(timestamp / 160) * 2, 0, Math.PI * 2);
+        cakeContext.fill();
+        cakeContext.shadowBlur = 12;
+        cakeContext.fillStyle = '#ffad38';
+        cakeContext.beginPath();
+        cakeContext.moveTo(candleX, candleTop - 12);
+        cakeContext.bezierCurveTo(candleX - 15 + flicker, candleTop - 28, candleX - 5, candleTop - 47, candleX, candleTop - 54);
+        cakeContext.bezierCurveTo(candleX + 7, candleTop - 44, candleX + 15 + flicker, candleTop - 26, candleX, candleTop - 12);
+        cakeContext.fill();
+        cakeContext.shadowBlur = 0;
+        cakeContext.fillStyle = '#fff1b4';
+        cakeContext.beginPath();
+        cakeContext.moveTo(candleX, candleTop - 14);
+        cakeContext.bezierCurveTo(candleX - 5, candleTop - 27, candleX - 2, candleTop - 36, candleX, candleTop - 41);
+        cakeContext.bezierCurveTo(candleX + 5, candleTop - 31, candleX + 6, candleTop - 22, candleX, candleTop - 14);
+        cakeContext.fill();
+      }
+      cakeContext.restore();
+    }
+
+    function animateCakeFrame(timestamp) {
+      renderCake(timestamp);
+      if (document.getElementById('screen4').classList.contains('active')) {
+        cakeAnimationFrame = requestAnimationFrame(animateCakeFrame);
+      } else {
+        cakeAnimationFrame = 0;
+      }
+    }
+
+    window.addEventListener('resize', resizeCakeCanvas);
+
+    // Dựng bánh lần lượt trên canvas trước khi cho phép thổi nến.
+    function animateCake() {
+      const blowButton = document.getElementById('blowCandles');
+      cakeAnimationStart = performance.now();
+      candleBlownOut = false;
+      blowButton.hidden = true;
+      resizeCakeCanvas();
+      if (!cakeAnimationFrame) cakeAnimationFrame = requestAnimationFrame(animateCakeFrame);
+      setTimeout(() => { blowButton.hidden = false; }, cakeMotionPreference.matches ? 0 : 2800);
+    }
+
+    document.getElementById('blowCandles').addEventListener('click', (event) => {
+      const button = event.currentTarget;
+      button.disabled = true;
+      button.textContent = 'Đang gửi bó hoa...';
+      candleBlownOut = true;
+      renderCake(performance.now());
+      setTimeout(() => {
+        window.location.assign('./hoavathiep.html');
+      }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650);
+    });
 
     function goTo3DScene() {
       switchScreen('screen6', 'screen7');
